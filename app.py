@@ -139,11 +139,6 @@ def show_calendar():
             'notes': entry.notes
         })
 
-    # Sortowanie dni - najlepsze i najgorsze
-    mood_entries_sorted = sorted(mood_entries, key=lambda x: x['score'])
-    worst_days = mood_entries_sorted[:3]  # 3 najgorsze dni
-    best_days = mood_entries_sorted[-3:]  # 3 najlepsze dni
-    best_days.reverse()  # Od najlepszego
 
     # Generowanie kalendarza
     cal = calendar.monthcalendar(year, month)
@@ -152,9 +147,8 @@ def show_calendar():
                            calendar=cal,
                            year=year,
                            month=month,
-                           mood_calendar=mood_calendar,
-                           best_days=best_days,
-                           worst_days=worst_days)
+                           mood_calendar=mood_calendar)
+
 
 @app.route('/stats')
 @login_required
@@ -166,6 +160,26 @@ def show_stats():
         MoodEntry.date >= week_ago
     ).all()
 
+    mood_calendar = {}
+    mood_entries = []
+    year = datetime.now().year
+    month = datetime.now().month
+
+    entry_date = datetime.strptime(request.form['entry_date'], '%Y-%m-%d').date()
+    for entry_date in entries:
+        mood_calendar[entry_date.date.day] = entry_date.mood_score
+        mood_entries.append({
+            'day': entry_date.date.day,
+            'score': entry_date.mood_score,
+            'notes': entry_date.notes
+        })
+
+    # Sortowanie dni - najlepsze i najgorsze
+    mood_entries_sorted = sorted(mood_entries, key=lambda x: x['score'])
+    worst_days = mood_entries_sorted[:3]  # 3 najgorsze dni
+    best_days = mood_entries_sorted[-3:]  # 3 najlepsze dni
+    best_days.reverse()  # Od najlepszego
+
     if entries:
         mood_scores = [entry.mood_score for entry in entries]
         average_score = sum(mood_scores) / len(mood_scores)
@@ -174,7 +188,7 @@ def show_stats():
         average_score = None
         chart = None
 
-    return render_template('stats.html', average_score=average_score,chart=chart)
+    return render_template('stats.html', average_score=average_score,chart=chart, best_days=best_days, worst_days=worst_days)
 
 @app.route('/accept_cookies', methods=['POST'])
 def accept_cookies():

@@ -4,6 +4,38 @@
 <div class="stats-page">
     <h1>Statystyki nastroju</h1>
 
+    <div class="mood-summary">
+        <div class="summary-box best-days">
+            <h3><i class="fas fa-smile"></i> Najlepsze dni</h3>
+            <ol>
+                {% for day in best_days %}
+                <li>
+                    <span class="day">{{ day.day }}.</span>
+                    <span class="score">{{ day.score }}/5</span>
+                    {% if day.notes %}<p class="notes">{{ day.notes }}</p>{% endif %}
+                </li>
+                {% else %}
+                <li>Brak danych</li>
+                {% endfor %}
+            </ol>
+        </div>
+
+        <div class="summary-box worst-days">
+            <h3><i class="fas fa-frown"></i> Najtrudniejsze dni</h3>
+            <ol>
+                {% for day in worst_days %}
+                <li>
+                    <span class="day">{{ day.day }}.</span>
+                    <span class="score">{{ day.score }}/5</span>
+                    {% if day.notes %}<p class="notes">{{ day.notes }}</p>{% endif %}
+                </li>
+                {% else %}
+                <li>Brak danych</li>
+                {% endfor %}
+            </ol>
+        </div>
+    </div>
+
     <div class="stats-container">
         <div class="stat-box average-score">
             <h2><i class="fas fa-chart-line"></i> Średni nastrój</h2>
